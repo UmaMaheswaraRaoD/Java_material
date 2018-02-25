@@ -1,0 +1,101 @@
+What’s the usage of Configuration Interface in hibernate?
+
+Configuration interface of hibernate framework is used to configure hibernate. It’s also used to bootstrap hibernate. Mapping documents of hibernate are located using this interface .
+
+
+Should all the mapping files of hibernate have .hbm.xml extension to work properly?
+
+No, having .hbm.xml extension is a convention and not a requirement for hibernate mapping file names. We can have any extension for these mapping files.
+
+. What’s HQL?
+ HQL is the query language used in Hibernate which is an extension of SQL. HQL is very efficient, simple and flexible query language to do various type of operations on relational database without writing complex database queries.
+
+How can we get hibernate statistics?
+ We can get hibernate statistics using getStatistics() method of SessionFactory class as shown below:
+ SessionFactory.getStatistics()
+
+How can we reduce database write action times in Hibernate?
+ Hibernate provides dirty checking feature which can be used to reduce database write times. Dirty checking feature of hibernate updates only those fields which require a change while keeps others unchanged.
+
+What’s the usage of callback interfaces in hibernate?
+ Callback interfaces of hibernate are useful in receiving event notifications from objects. For example, when an object is loaded or deleted, an event is generated and notification is sent using callback interfaces.
+
+What the four ORM levels are in hibernate?
+ Following are the four ORM levels in hibernate:
+ a. Pure Relational
+ b. Light Object Mapping
+ c. Medium Object Mapping
+ d. Full Object Mapping
+
+What is the default cache service of hibernate?
+ Hibernate supports multiple cache services like EHCache, OSCache, SWARMCache and TreeCache and default cache service of hibernate is EHCache.
+
+What’s the usage of Hibernate QBC API?
+ Hibernate Query By Criteria (QBC) API is used to create queries by manipulation of criteria objects at runtime.
+
+. How can we reattach any detached objects in Hibernate?
+
+Objects which have been detached and are no longer associated with any persistent entities can be reattached by calling session.merge() method of session class.
+
+What are different ways to disable hibernate second level cache?
+Hibernate second level cache can be disabled using any of the following ways:
+ a. By setting use_second_level_cache as false.
+ b. By using CACHEMODE.IGNORE
+ c. Using cache provider as org.hibernate.cache.NoCacheProvider
+
+Which one is the default transaction factory in hibernate?
+ With hibernate 3.2, default transaction factory is JDBCTransactionFactory.
+
+What’s the role of JMX in hibernate?
+ Java Applications and components are managed in hibernate by a standard API called JMX API. JMX provides tools for development of efficient and robust distributed, web based solutions.
+
+How can we bind hibernate session factory to JNDI ?
+ Hibernate session factory can be bound to JNDI by making configuration changes in hibernate.cfg file.
+
+ What different fetching strategies are of hibernate?
+ Following fetching strategies are available in hibernate:
+ 1. Join Fetching
+ 2. Batch Fetching
+ 3. Select Fetching
+ 4. Sub-select Fetching
+
+ What are derived properties in hibernate?
+ Derived properties are those properties which are not mapped to any columns of a database table. Such properties are calculated at runtime by evaluation of any expressions.
+
+ What’s the difference between load() and get() method in hibernate?
+ Load() methods results in an exception if the required records isn’t found in the database while get() method returns null when records against the id isn’t found in the database.
+ So, ideally we should use Load() method only when we are sure about existence of records against an id.
+
+What’s the use of version property in hibernate?
+ Version property is used in hibernate to know whether an object is in transient state or in detached state.
+
+What is attribute oriented programming?
+ In Attribute oriented programming, a developer can add Meta data (attributes) in the java source code to add more significance in the code. For Java (hibernate), attribute oriented programming is enabled by an engine called XDoclet.
+
+ What’s the use of session.lock() in hibernate?
+ session.lock() method of session class is used to reattach an object which has been detached earlier. This method of reattaching doesn’t check for any data synchronization in database while reattaching the object and hence may lead to lack of synchronization in data.
+
+Does hibernate support polymorphism?
+ Yes, hibernate fully supports polymorphism. Polymorphism queries and polymorphism associations are supported in all mapping strategies of hibernate.
+
+ What the three inheritance models are of hibernate?
+ Hibernate has following three inheritance models:
+ a. Tables Per Concrete Class
+ b. Table per class hierarchy
+ c. Table per sub-class
+
+How can we map the classes as immutable?
+ If we don’t want an application to update or delete objects of a class in hibernate, we can make the class as immutable by setting mutable=false
+
+What is Light Object Mapping?
+ Light Object Mapping is one of the levels of ORM quality in which all entities are represented as classes and they are mapped manually.
+
+What’s difference between managed associations and hibernate associations?
+ Managed associations relate to container management persistence and are bi-directional while hibernate associations are unidirectional.
+
+
+What is a Session Factory? Is it a thread-safe object?
+
+SessionFactory is Hibernates concept of a single datastore and is threadsafe so that many threads can access it concurrently and request for sessions and immutable cache of compiled mappings for a single database. A SessionFactory is usually only built once at startup. SessionFactory should be wrapped in some kind of singleton so that it can be easily accessed in an application code. 
+
+SessionFactory sessionFactory = new Configuration().configure().buildSessionfactory();

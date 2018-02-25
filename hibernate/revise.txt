@@ -1,0 +1,11 @@
+What is hibernate framework? Why is it said to be an ORM framework?
+
+1) Map objects to tables
+2) Use persistence api for crud operations : save, update, delete, get, load
+3) We don't have to load the driver, write sql queries, manage the resultset, do the data transformation. Just focus on business logic when compared to jdbc
+4) Hibernate provides a powerful query language (HQL) that is similar to SQL. However, HQL is fully object-oriented and understands concepts like inheritance, polymorphism and association
+5) Hibernate is an open source project from Red Hat Community and used worldwide. This makes it a better choice than others because learning curve is small and there are tons of online documentations and help is easily available in forums.
+6) Hibernate is easy to integrate with other Java EE frameworks, it’s so popular that Spring Framework provides built-in support for integrating hibernate with Spring applications
+7)Hibernate supports lazy initialization using proxy objects and perform actual database queries only when it’s required.
+8) Hibernate cache helps us in getting better performance.
+9) For database vendor specific feature, hibernate is suitable because we can also execute native sql queries.

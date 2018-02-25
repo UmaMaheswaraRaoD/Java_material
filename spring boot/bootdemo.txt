@@ -1,0 +1,128 @@
+Spring boot:
+
+Provides Annotations instead of xml based configurations
+Attaches tomcat/ jetty server
+provides unified ecosystem of libraries and standards to all developers utilizing microservices methodologies
+cloud support for configuartion, tools, clients. Compatible with cloud native and works with cloud foundry, pivotal etc
+
+Support for no-sql, distributed cache
+
+1.start.spring.io: spring initializr page, can create spring boot application
+2. java cli 
+3. eclipse maven
+
+spring-boot-starter-parent
+spring-boot-starter-web
+
+@SpringBootApplication: bootstrap the spring boot application
+
+Add this to pom to create ready to run jars:
+<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+java -jar xyz.jar
+
+Using CLI:
+command line interface
+
+uses spring-boot-autoconfigurer to resolve dependencies. 
+manual installation:
+download spring-boot-cli-bin.zip
+E:\java\jar\spring-boot-cli-1.5.9.RELEASE-bin\spring-1.5.9.RELEASE
+E:\java\jar\spring-boot-cli-1.5.9.RELEASE-bin\spring-1.5.9.RELEASE\bin: spring.bat
+or can use java -jar with jar file.
+
+save bin path to path variable.
+
+spring --version
+spring --help
+
+Create a groovy file:
+dir>app.groovy
+
+place the content in the file:
+@RestController
+
+public class MyController{
+
+@RequestMapping("/hello")
+public String greet(){
+"Hello there!";
+}
+
+}
+
+run command: spring run app.groovy
+
+No imports in groovy, bootstrap
+
+
+CRUD operations using embedded database:
+h2, hsqldb,derby, jpa(for spring-boot-starter-data-jpa dependency)
+An embedded database is a database technology in which database management solutions are embedded into an application, rather than provided as standalone database systems.
+
+@RequestBody : convert json to java in RestController
+
+databases:
+jooq: java object oriented query
+mybatis: orm tool like hibernate
+Embedded database: in-memory database: used for testing purpose. Data not saved permanently
+h2: no need ot enter datasource, url, passsword, dialect
+datasource automatically injected
+
+{newEmail:.+}: using regular expression so that .com is not truncated
+
+Async : Return type: future, CompletableFututre(java8), ListenableFuture(spring)
+load balancer: 
+circuit
+tracing: zipkin+ sleuth
+
+
+
+Query methods in spring data 
+	
+	public Student findByIdAndName(int id, String name);
+	
+	public List<Student> findDistinctStudentByName(String name);
+	
+	public List<Student> findByNameIgnoreCase(String name);
+	
+	public List<Student> findByNameOrderByIdAsc(String name);
+	
+Can use findBy, readBy, queryBy, countBy, getBy. Can use and or or, is ,equals,between, less than, lessthanequal, greaterthan, greaterThanEqual, before, isNull, like, startingwith, endingwith, containing, orderby, not, in, not in, true , notlike, false, ignorecase
+
+findByActiveTrue()
+
+return tyoes: void, primitive, wrapper, iterator, collection, list, optional, option, stream, future (@Async), comparablefuture, listenablefuture, slice, page, georesult, georesults, geopage
+
+docs.spring.io/spring-data/jpa
+
+
+@NamedQueries JPA @NamedNativeQuery
+Using named queries to declare queries for entities is a valid approach and works fine for a small number of queries. As the queries themselves are tied to the Java method that executes them you actually can bind them directly using the Spring Data JPA @Query annotation rather than annotating them to the domain class. This will free the domain class from persistence specific information and co-locate the query to the repository interface.
+
+ You can however use native queries for pagination by specifying the count query yourself:
+
+
+Example 58. Declare native count queries for pagination at the query method using @Query
+
+
+
+javapublic interface UserRepository extends JpaRepository<User, Long> {
+
+  @Query(value = "SELECT * FROM USERS WHERE LASTNAME = ?1",
+    countQuery = "SELECT count(*) FROM USERS WHERE LASTNAME = ?1",
+    nativeQuery = true)
+  Page<User> findByLastname(String lastname, Pageable pageable);
+}
+
+
+
+
+Spring’s TaskExecutor interface is identical to the java.util.concurrent.Executor interface
+

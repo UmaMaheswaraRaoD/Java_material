@@ -1,0 +1,3 @@
+https://dzone.com/articles/a-beginners-tutorial-for-understanding-and-impleme
+https://videos.mulesoft.com/watch/GnwbiFfEY6XzxkucMNo8bK
+https://vladmihalcea.com/how-to-map-calculated-properties-with-jpa-and-hibernate-formula-annotation/

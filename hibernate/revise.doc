@@ -1,0 +1,840 @@
+
+ORM: object relational mapping. 
+
+
+
+
+
+
+Hibernate will now override these methods to provide implementation so that code need not be changed switching from one orm to other
+
+Can be used in java, .net. Tools to implement it: Ibatis, hibernate, toplink.
+
+Had own way of working. Sun microsystem declared some common standard. JPA. JPA only specification. Has to be implemented using some tool.
+
+Persistence-unit: diff unit for diff settings.
+
+JPA persist: Can be used with all jpa specifications. Returns void. Primary key can be generated any time till flushed.
+
+Flush in Hibernate: Flushing is the process of synchronizing the state of the persistence context with the underlying database. The EntityManager and the Hibernate Session expose a set of methods, through which the application developer can change the persistent state of an entity.
+
+The persistence context acts as a transactional write-behind cache, queuing any entity state change. Like any write-behind cache, changes are first applied in-memory and synchronized with the database during flush time. The flush operation takes every entity state change and translates it to an INSERT, UPDATE or DELETE statement.
+The flushing strategy is given by the flushMode of the current running Hibernate Session. Although JPA defines only two flushing strategies (AUTO and COMMIT), Hibernate has a much broader spectrum of flush types:
+
+ALWAYS
+Flushes the Session before every query.
+
+AUTO
+This is the default mode and it flushes the Session only if necessary.
+
+COMMIT
+The Session tries to delay the flush until the current Transaction is committed, although it might flush prematurely too.
+
+MANUAL
+The Session flushing is delegated to the application, which must call Session.flush() explicitly in order to apply the persistence context changes.
+
+Hibernate save: Not available in other jpa implementations. Returns primary key of the entity
+
+
+
+What is hibernate framework? Why is it said to be an ORM framework?
+No need to change code. Only config changes. Caching, pojo mapping with tables
+
+JPA: Hibernate -> wrapper over JPA.  
+
+Persistance: continuance of an effect after the cause is removed
+
+JPA is the interface, hibernate is one implementation of it. Hibernate is JPA Provider.
+
+Overridden stuff in Hibernate from JPA: 
+
+Hibernate: make associations, mapping on the fly. No need to specify everything, will generate everything as per the annotations. 
+
+@Entity: needed to do mapping. Should have protected/ public or default type default constructor. If default constructor private, error. Cannot create proxy object
+
+Entity class can be made final but not preferred. Hibernate uses proxy pattern for performance improvement. Hibernate creates proxies dynamically by creating subclass of entity at runtime which overrides all methods of parents. When method is called, it will load parent class object from the db and call parent class method. If entity class final, cannot subclass this class
+
+If entity final:
+
+
+
+
+3 tables created for OneToMany unidirectional mapping
+
+If I am making entity class final, lazy loading disabled
+
+
+
+
+
+Unidirectional 1 to many creating 3 tables
+
+
+Hibernate: Mapping and fetching
+
+Table per hierarchy:
+
+Only one table required to map one table hierarchy
+Class Trainer -> id, name
+Class ContractualTrainer (paperhour, contractperiod),
+class RegularTrainer (salary, bonus)
+
+Id
+Name
+Paperhour
+Contractperiod
+Salary
+Bonus
+DType
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	Primary key: id
+
+Storing table per hierarchy without dtype column
+
+Table per concrete class:
+
+No nullable columns in table
+What is Hibernate proxy?
+- The proxy attribute enables lazy initialization of persistent instances of the class. 
+
+- Hibernate will initially return CGLIB proxies which implement the named interface. 
+
+- The actual persistent object will be loaded when a method of the proxy is invoked
+
+Proxies are classes generated dynamically by Hibernate to help with lazy loading. For instance, if you have a Cat class, Hibernate will generate a proxy class that extends Cat.
+If you get an uninitialized instance of this proxy, essentially all its fields will be null except the ID because Hibernate has not yet hit the database. Now the first time you will call a method on this proxy, it will realize that it is not initialized and it will query the database to load it's attributes. This is possible because the dynamically generated class overrides the base class's methods and adds this initialized/uninitialized check.
+Now assume that your Cat class is not a proxy and that it has a father association, when you load a Cat object, Hibernate will need to load all it's attributes. So if you load a Cat object, Hibernate will also need to load its father and the father's father and so on. Using proxies enable Hibernate to only load the required instances.
+Cat cat1 = (Cat) session.load(1);
+Cat cat2 = (Cat) session.load(2);
+Cat cat3 = (Cat) session.load(3);
+
+cat1.meow(); // this will cause Hibernate to run a query to load cat1's data
+cat2.meow(); // this will cause Hibernate to run a query to load cat2's data
+
+// After this cat3 is still an uninitiated proxy because it has not been used
+batch-size is another feature of Hibernate that, in most instances, help dealing with lazy loading. Basically the idea is that Hibernate keeps track of the uninitialized proxies and when one of the needs to be initialized, a single query will be executed to load up to batch-size proxies (instead of just one proxy/query)
+Cat cat1 = (Cat) session.load(1);
+Cat cat2 = (Cat) session.load(2);
+
+cat1.meow(); // if batch-size >= 2, cat1 and cat2 will be loaded in a single query
+cat2.meow(); // no query will be executed here
+
+1) Map objects to tables
+2) Use persistence api for crud operations: save, update, delete, get, load
+3) We don't have to load the driver, write sql queries, manage the resultset, do the data transformation. Just focus on business logic when compared to jdbc
+4) Hibernate provides a powerful query language (HQL) that is similar to SQL. However, HQL is fully object-oriented and understands concepts like inheritance, polymorphism and association
+5) Hibernate is an open source project from Red Hat Community and used worldwide. This makes it a better choice than others because learning curve is small and there are tons of online documentations and help is easily available in forums.
+6) Hibernate is easy to integrate with other Java EE frameworks, it’s so popular that Spring Framework provides built-in support for integrating hibernate with Spring applications
+7)Hibernate supports lazy initialization using proxy objects and perform actual database queries only when it’s required.
+8) Hibernate cache helps us in getting better performance.
+9) For database vendor specific feature, hibernate is suitable because we can also execute native sql queries.
+10) Hibernate implicitly provides transaction management, in fact most of the queries can’t be executed outside transaction.
+11) 
+
+Transaction Management:
+
+If only 1 database: configure datasource , enable it to participate in global transaction, give jndi name, get Connection. If only 1 datasource, connection.setAutoCommit(false); connection.commit(); connection.rollback();
+
+If more than 1 database:
+Driver should support global transaction. Enable global transaction, transaction manager in server. Create Resource manager for managing datasource, 1 per db. JTS: Java transaction service. Implementing JTS is creating resource manager.
+JTA: java transaction api: 
+1 Transaction manager exist for managing all resources. Various applications servers. UserTransaction interface implementation written by each application server knows how to interact with Transaction Manager. Object of UserTransaction created using jndi: java:/userTransaction.
+
+UserTransaction.begin(), commit(), rollback()
+
+Transaction Manager will rollback if any of the resource manager notifies that any statement execution fails.
+
+
+
+Session.getConnection().setAutoCommit(false): not recommended
+
+Session.beginTransaction(): recommended.
+
+Getting the java.sql.Connection object using Session:
+
+org.hibernate.Session is nothing but get the one physical connection from the database. 
+
+By using Session we can get the Connection object several ways.
+
+1) session.connection() - this method is deprecated. it is not available on Hibernate4.
+
+2) session.doWork() - this method doesn't return Connection object, but inside what ever operation we want to do using connection object we can do. 
+
+3) session.doReturningWork() - this method returns dynamic type value. In the below example i am return Connection object. 
+
+4) SessionImpl.connection() - Down casting the Session object to SessionImpl. By using SessionImpl we will get the Connection object.
+
+5) ConnectionProvider.getConnection() - Using ConnectionProvider getConnection() method.
+
+
+Full Example:
+
+package com.varasofttech.client;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.jdbc.ReturningWork;
+import org.hibernate.jdbc.Work;
+
+import com.varasofttech.util.HibernateUtil;
+
+public class Application {
+    
+    public static void main(String[] args) {
+        
+        // Different ways to get the Connection object using Session
+        
+        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+        Session session = sessionFactory.openSession();
+        
+        // Way1 - using doWork method
+        session.doWork(new Work() {
+            @Override
+            public void execute(Connection connection) throws SQLException {
+                // do your work using connection
+            }
+            
+        });
+        
+        // Way2 - using doReturningWork method
+        Connection connection = session.doReturningWork(new ReturningWork<Connection>() {
+            @Override
+            public Connection execute(Connection conn) throws SQLException {
+                return conn;
+            }
+        });
+        
+        // Way3 - using Session Impl
+        SessionImpl sessionImpl = (SessionImpl) session;
+        connection = sessionImpl.connection();
+        // do your work using connection
+        
+        // Way4 - using connection provider
+        SessionFactoryImplementor sessionFactoryImplementation = (SessionFactoryImplementor) session.getSessionFactory();
+        ConnectionProvider connectionProvider = sessionFactoryImplementation.getConnectionProvider();
+        try {
+            connection = connectionProvider.getConnection();
+            // do your work using connection
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+ 
+
+When using hibernate in application server, instead of using hibernate transaction, use UserTransaction interface
+
+Session.beginTransaction(): will see if there is a transaction going on , if yes, will use same
+
+
+
+
+sessionFactory.getCurrentSession(): Error, not using JTA and neither configured CurrentSessionContext
+
+
+
+
+No need of session.close() here
+
+
+
+
+
+If doing session.getCurrentSession(), need not flush. Tx.commit will do. But if openSession(), we need to flush that and close that.
+
+
+Before transaction is committed, flush the session.
+
+
+
+
+
+
+
+
+
+
+Even if flushed and not done commit, changes not saved in db though queries executed, not committed in db. If neither commit nor flushed, queries not executed in db.
+
+
+
+
+
+Any entity instance in your application appears in one of the three main states in relation to the Session persistence context:
+* transient — this instance is not, and never was, attached to a Session; this instance has no corresponding rows in the database; it’s usually just a new object that you have created to save to the database;
+* persistent — this instance is associated with a unique Session object; upon flushing the Session to the database, this entity is guaranteed to have a corresponding consistent record in the database;
+* detached — this instance was once attached to a Session (in a persistent state), but now it’s not; an instance enters this state if you evict it from the context, clear or close the Session, or put the instance through serialization/deserialization process.
+
+This means that when you change fields of a persistent object, you don’t have to call save, update or any of those methods to get these changes to the database: all you need is to commit the transaction, or flush or close the session, when you’re done with it.
+
+Persist: save the instance in db. Does not return primary key. Does not guarantee that primary key would be generated right away. The specification for the persist method allows the implementation to issue statements for generating id on commit or flush, and the id is not guaranteed to be non-null after calling this method, so you should not rely upon it. If you try to persist a detached instance, the implementation is bound to throw an exception.
+
+
+Save
+
+it persists the instance, “first assigning a generated identifier”. The method is guaranteed to return the Serializable value of this identifier. Difference comes when you try to save a detached instance:
+
+6
+Person person = new Person();
+person.setName("John");
+Long id1 = (Long) session.save(person);
+ 
+session.evict(person);
+Long id2 = (Long) session.save(person);
+The id2 variable will differ from id1. The call of save on a detached instance creates a new persistent instance and assigns it a new identifier, which results in a duplicate record in a database upon committing or flushing.
+Persist throws exception.
+
+
+
+
+But the entity class should have generator enable for primary key
+
+Merge:
+
+transient
+the entity has just been instantiated and is not associated with a persistence context. It has no persistent representation in the database and typically no identifier value has been assigned (unless the assigned generator was used).
+managed, or persistent
+the entity has an associated identifier and is associated with a persistence context. It may or may not physically exist in the database yet.
+detached
+the entity has an associated identifier, but is no longer associated with a persistence context (usually because the persistence context was closed or the instance was evicted from the context)
+removed
+the entity has an associated identifier and is associated with a persistence context, however it is scheduled for removal from the database.
+
+Lazy attribute loading
+Think of this as partial loading support. Essentially you can tell Hibernate that only part(s) of an entity should be loaded upon fetching from the database and when the other part(s) should be loaded as well. Note that this is very much different from proxy-based idea of lazy loading which is entity-centric where the entity’s state is loaded at once as needed. With bytecode enhancement, individual attributes or groups of attributes are loaded as needed.
+Lazy attributes can be designated to be loaded together and this is called a "lazy group". By default, all singular attributes are part of a single group, meaning that when one lazy singular attribute is accessed all lazy singular attributes are loaded. Lazy plural attributes, by default, are each a lazy group by themselves. This behavior is explicitly controllable through the @org.hibernate.annotations.LazyGroup 
+In-line dirty tracking
+If your application does not need to care about "internal state changing data-type" use cases, bytecode-enhanced dirty tracking might be a worthwhile alternative to consider, especially in terms of performance. In this approach Hibernate will manipulate the bytecode of your classes to add "dirty tracking" directly to the entity, allowing the entity itself to keep track of which of its attributes have changed. During flush time, Hibernate simply asks your entity what has changed rather that having to perform the state-diff calculations.s
+
+
+
+Load : lazy loading. an exception will be thrown later if the given entity does not refer to actual database state when the application attempts to use the returned proxy in any way that requires access to its data.s
+
+
+
+Program runs fine till we fire getId() on c object. Then only it throws ObjectNotFoundException
+
+
+
+getReference
+Should be used in cases where the identifier is assumed to exist, where non-existence would be an actual error. Should never be used to test existence. That is because this method will prefer to create and return a proxy if the data is not already associated with the Session rather than hit the database. The quintessential use-case for using this method is to create foreign-key based associations.
+load
+Will return the persistent data associated with the given identifier value or null if that identifier does not exist.
+The default UPDATE statement containing all columns has two advantages:
+* it allows you to better benefit from JDBC Statement caching.
+* it allows you to enable batch updates even if multiple entities modify different properties.
+However, there is also one downside to including all columns in the SQL UPDATE statement. If you have multiple indexes, the database might update those redundantly even if you don’t actually modify all column values.
+To fix this issue, you can use dynamic updates.
+5.8.1. Dynamic updates
+To enable dynamic updates, you need to annotate the entity with the @DynamicUpdate annotation:
+
+
+This time, when reruning the previous test case, Hibernate generates the following SQL UPDATE statement:
+Example 315. Modifying the Product entity with a dynamic update
+UPDATE
+    Product
+SET
+    price_cents = ?
+WHERE
+    id = ?
+
+-- binding parameter [1] as [INTEGER] - [2499]
+-- binding parameter [2] as [BIGINT]  - [1]
+sRefresh entity state
+You can reload an entity instance and its collections at any time.
+session.refresh( person );
+The refresh entity state transition is meant to overwrite the entity attributes according to the info currently contained in the associated database record.
+However, you have to be very careful when cascading the refresh action to any transient entity.
+an EntityNotFoundException is thrown because the Book entity is still in a transient state. When the refresh action is cascaded from the Person entity, Hibernate will not be able to locate the Book entity in the database
+
+Session.lock
+
+
+
+
+Verifying laziness with Hibernate APIs
+
+Checking persistent state
+An application can verify the state of entities and collections in relation to the persistence context.
+Example 324. Verifying managed state with JPA
+boolean contained = entityManager.contains( person );
+Example 325. Verifying managed state with Hibernate API
+boolean contained = session.contains( person );
+
+Evicting entities
+When the flush() method is called, the state of the entity is synchronized with the database. If you do not want this synchronization to occur, or if you are processing a huge number of objects and need to manage memory efficiently, the evict() method can be used to remove the object and its collections from the first-level cache
+To detach all entities from the current persistence context, both the EntityManager and the Hibernate Session define a clear() method.
+
+To verify if an entity instance is currently attached to the running persistence context, both the EntityManager and the Hibernate Session define a contains(Object entity) method.
+
+Cascading entity state transitions
+JPA allows you to propagate the state transition from a parent entity to a child. For this purpose, the JPA javax.persistence.CascadeType defines various cascade types:
+ALL
+cascades all entity state transitions
+PERSIST
+cascades the entity persist operation.
+MERGE
+cascades the entity merge operation.
+REMOVE
+cascades the entity remove operation.
+REFRESH
+cascades the entity refresh operation.
+DETACH
+cascades the entity detach operation.
+Additionally, the CascadeType.ALL will propagate any Hibernate-specific operation, which is defined by the org.hibernate.annotations.CascadeType enum:
+SAVE_UPDATE
+cascades the entity saveOrUpdate operation.
+REPLICATE
+cascades the entity replicate operation.
+LOCK
+cascades the entity lock operation.
+CascadeType.LOCK
+Although unintuitively, CascadeType.LOCK does not propagate a lock request from a parent entity to its children. Such a use case requires the use of the PessimisticLockScope.EXTENDED value of the javax.persistence.lock.scope property.
+However, CascadeType.LOCK allows us to reattach a parent entity along with its children to the currently running Persistence Context.
+CascadeType.REFRESH
+The CascadeType.REFRESH is used to propagate the refresh operation from a parent entity to a child. The refresh operation will discard the current entity state, and it will override it using the one loaded from the database.
+@OnDelete cascade
+While the previous cascade types propagate entity state transitions, the @OnDelete cascade is a DDL-level FK feature which allows you to remove a child record whenever the parent row is deleted.
+So, when annotating the @ManyToOne association with @OnDelete( action = OnDeleteAction.CASCADE ), the automatic schema generator will apply the ON DELETE CASCADE SQL directive to the Foreign Key declaration,
+The flushing strategy is given by the flushMode of the current running Hibernate Session. Although JPA defines only two flushing strategies (AUTO and COMMIT), Hibernate has a much broader spectrum of flush types:
+ALWAYS
+Flushes the Session before every query.
+AUTO
+This is the default mode and it flushes the Session only if necessary.
+COMMIT
+The Session tries to delay the flush until the current Transaction is committed, although it might flush prematurely too.
+MANUAL
+The Session flushing is delegated to the application, which must call Session.flush() explicitly in order to apply the persistence context changes.
+6.1. AUTO flush
+By default, Hibernate uses the AUTO flush mode which triggers a flush in the following circumstances:
+* prior to committing a Transaction
+* prior to executing a JPQL/HQL query that overlaps with the queued entity actions
+* before executing any native SQL query that has no registered synchronization
+
+
+
+
+AUTO flush on native SQL query
+When executing a native SQL query, a flush is always triggered when using the EntityManager API.
+The Session API doesn’t trigger an AUTO flush when executing a native query
+JPA also defines a COMMIT flush mode, which is described as follows:
+If FlushModeType.COMMIT is set, the effect of updates made to entities in the persistence context upon queries is unspecified.
+— Section 3.10.8 of the JPA 2.1 Specification 
+When executing a JPQL query, the persistence context is only flushed when the current running transaction is committed.
+ALWAYS flush
+
+The ALWAYS is only available with the native Session API.
+The ALWAYS flush mode triggers a persistence context flush even when executing a native SQL query against the Session API.
+
+COMMIT flushing on SQL
+Person person = new Person("John Doe");
+entityManager.persist(person);
+
+Session session = entityManager.unwrap( Session.class);
+assertTrue(((Number) session
+        .createNativeQuery("select count(*) from Person")
+        .setFlushMode( FlushMode.ALWAYS)
+        .uniqueResult()).intValue() == 1);
+INSERT INTO Person (name, id) VALUES ('John Doe', 1)
+
+SELECT COUNT(*) FROM Person
+Both the EntityManager and the Hibernate Session define a flush() method that, when called, triggers a manual flush. Hibernate also defines a MANUAL flush mode so the persistence context can only be flushed manually.
+Example 352. MANUAL flushing
+Person person = new Person("John Doe");
+entityManager.persist(person);
+
+Session session = entityManager.unwrap( Session.class);
+session.setHibernateFlushMode( FlushMode.MANUAL );
+
+assertTrue(((Number) entityManager
+    .createQuery("select count(id) from Person")
+    .getSingleResult()).intValue() == 0);
+
+assertTrue(((Number) session
+    .createNativeQuery("select count(*) from Person")
+    .uniqueResult()).intValue() == 0);
+The INSERT statement was not executed because the persistence context because there was no manual flush() call. This mode is useful when using multi-request logical transactions and only the last request should flush the persistence context.
+
+Flush operation order
+From a database perspective, a row state can be altered using either an INSERT, an UPDATE or a DELETE statement. Because entity state changes are automatically converted to SQL statements, it’s important to know which entity actions are associated to a given SQL statement.
+INSERT
+The INSERT statement is generated either by the EntityInsertAction or EntityIdentityInsertAction. These actions are scheduled by the persist operation, either explicitly or through cascading the PersistEvent from a parent to a child entity.
+DELETE
+The DELETE statement is generated by the EntityDeleteAction or OrphanRemovalAction.
+UPDATE
+The UPDATE statement is generated by EntityUpdateAction during flushing if the managed entity has been marked modified. The dirty checking mechanism is responsible for determining if a managed entity has been modified since it was first loaded.
+Hibernate does not execute the SQL statements in the order of their associated entity state operations.
+
+
+The ActionQueue executes all operations in the following order:
+1. OrphanRemovalAction
+2. EntityInsertAction or EntityIdentityInsertAction
+3. EntityUpdateAction
+4. CollectionRemoveAction
+5. CollectionUpdateAction
+6. CollectionRecreateAction
+7. EntityDeleteAction
+Commit will make the database commit
+- Flushing is the process of synchronizing the underlying persistent
+store with persistable state held in memory.
+ie. it will update or insert into your tables in the running
+transaction, but it _may_ not commit those changes (this depends on
+your flush mode). When you have a persisted object and you change a
+value on it, it becomes dirty and hibernate needs to flush these
+changes to your persistence layer. It may do this automatically for
+you or you may need to do this manually, that depends on your flush
+mode,s
+ConnectionProvider
+As an ORM tool, probably the single most important thing you need to tell Hibernate is how to connect to your database so that it may connect on behalf of your application. This is ultimately the function of the org.hibernate.engine.jdbc.connections.spi.ConnectionProvider interface
+Hibernate will internally determine which ConnectionProvider to use based on the following algorithm:
+1. If hibernate.connection.provider_class is set, it takes precedence
+2. else if hibernate.connection.datasource is set ? Using DataSources
+3. else if any setting prefixed by hibernate.c3p0. is set ? Using c3p0
+4. else if any setting prefixed by hibernate.proxool. is set ? Using Proxool
+5. else if any setting prefixed by hibernate.hikari. is set ? Using Hikari
+6. else if hibernate.connection.url is set ? Using Hibernate’s built-in (and unsupported) pooling
+7. else ? User-provided Connections
+Using DataSources
+Hibernate can integrate with a javax.sql.DataSource for obtaining JDBC Connections. Applications would tell Hibernate about the DataSource via the (required) hibernate.connection.datasource setting which can either specify a JNDI name or would reference the actual DataSource instance. For cases where a JNDI name is given, be sure to read JNDI
+
+For JPA applications, note that hibernate.connection.datasource corresponds to either javax.persistence.jtaDataSource or javax.persistence.nonJtaDataSource.
+The DataSource ConnectionProvider also (optionally) accepts the hibernate.connection.username and hibernate.connection.password. If specified, the DataSource#getConnection(String username, String password) will be used. Otherwise, the no-arg form is used.
+User-provided Connections
+It is possible to use Hibernate by simply passing a Connection to use to the Session when the Session is opened. This usage is discouraged and not discussed here
+. ConnectionProvider support for transaction isolation setting
+All of the provided ConnectionProvider implementations, other than DataSourceConnectionProvider, support consistent setting of transaction isolation for all Connections obtained from the underlying pool. The value for hibernate.connection.isolation can be specified in one of 3 formats:
+* the integer value accepted at the JDBC level
+* the name of the java.sql.Connection constant field representing the isolation you would like to use. For example, TRANSACTION_REPEATABLE_READ for java.sql.Connection#TRANSACTION_REPEATABLE_READ. Not that this is only supported for JDBC standard isolation levels, not for isolation levels specific to a particular JDBC driver.
+* a short-name version of the java.sql.Connection constant field without the TRANSACTION_ prefix. For example, REPEATABLE_READ for java.sql.Connection#TRANSACTION_REPEATABLE_READ. Again, this is only supported for JDBC standard isolation levels, not for isolation levels specific to a particular JDBC driver.
+* Transaction handling per Session is handled by the org.hibernate.resource.transaction.spi.TransactionCoordinator contract, which are built by the org.hibernate.resource.transaction.spi.TransactionCoordinatorBuilder service. TransactionCoordinatorBuilder represents a strategy for dealing with transactions whereas TransactionCoordinator represents one instance of that strategy related to a Session. Which TransactionCoordinatorBuilder implementation to use is defined by the hibernate.transaction.coordinator_class setting.
+* jdbc (the default for non-JPA applications)
+* Manages transactions via calls to java.sql.Connection
+* jta
+* Manages transactions via JTA. See Java EE bootstrapping
+* If a JPA application does not provide a setting for hibernate.transaction.coordinator_class, Hibernate will automatically build the proper transaction coordinator based on the transaction type for the persistence unit.
+* If a non-JPA application does not provide a setting for hibernate.transaction.coordinator_class, Hibernate will use jdbc as the default. This default will cause problems if the application actually uses JTA-based transactions. A non-JPA application that uses JTA-based transactions should explicitly set hibernate.transaction.coordinator_class=jta or provide a custom org.hibernate.resource.transaction.TransactionCoordinatorBuilder that builds a org.hibernate.resource.transaction.TransactionCoordinator that properly coordinates with JTA-based transactions
+
+To use this API, you would obtain the org.hibernate.Transaction from the Session. Transaction allows for all the normal operations you’d expect: begin, commit and rollback, and it even exposes some cool methods like:
+markRollbackOnly
+that works in both JTA and JDBC
+getTimeout and setTimeout
+that again work in both JTA and JDBC
+registerSynchronization
+that allows you to register JTA Synchronizations even in non-JTA environments. In fact in both JTA and JDBC environments, these Synchronizations are kept locally by Hibernate. In JTA environments, Hibernate will only ever register one single Synchronization with the TransactionManager to avoid ordering problems.
+Additionally, it exposes a getStatus method that returns an org.hibernate.resource.transaction.spi.TransactionStatus enum.
+Using Transaction API in JDBC
+StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+        // "jdbc" is the default, but for explicitness
+        .applySetting( AvailableSettings.TRANSACTION_COORDINATOR_STRATEGY, "jdbc" )
+        .build();
+
+Metadata metadata = new MetadataSources( serviceRegistry )
+        .addAnnotatedClass( Customer.class )
+        .getMetadataBuilder()
+        .build();
+
+SessionFactory sessionFactory = metadata.getSessionFactoryBuilder()
+        .build();
+
+Session session = sessionFactory.openSession();
+try {
+    // calls Connection#setAutoCommit( false ) to
+    // signal start of transaction
+    session.getTransaction().begin();
+
+    session.createQuery( "UPDATE customer set NAME = 'Sir. '||NAME" )
+            .executeUpdate();
+
+    // calls Connection#commit(), if an error
+    // happens we attempt a rollback
+    session.getTransaction().commit();
+}
+catch ( Exception e ) {
+    // we may need to rollback depending on
+    // where the exception happened
+    if ( session.getTransaction().getStatus() == TransactionStatus.ACTIVE
+            || session.getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK ) {
+        session.getTransaction().rollback();
+    }
+    // handle the underlying error
+}
+finally {
+    session.close();
+    sessionFactory.close();
+}
+Versioning of object: To find how many times object got updated in db.
+1) Create property in pojo eg ver
+2) Create getter and setter
+3) @Version(name=”ver”, column=version)
+4) For newly  created object, sets it to 0. 
+Numeric versioning is efficient, but to map it to some db, can use timestamp versioning in hibernate
+Can use numeric or timestamp column for versioning
+Hibernate may get 2 updates at same timestamp as jvm does not scale that good to make aware of diff in milliseconds
+
+
+
+
+
+Hibernate will have to run extra query to get the current timestamp
+
+
+Hibernate 5 has support for Java 8 date and time api’s
+
+Get query result as a stream
+
+
+
+
+
+
+Fetching multiple entities by primary key
+
+Either can do it in a loop passing each primary key or using in clause
+
+Hibernate now provides MultiIdentifierLoadAccessInterface
+
+
+
+
+
+Join unassociated entities in a query
+
+
+
+
+@Repeatable annotations
+
+
+Earlier had to do that
+
+
+Now can do like this :)
+
+Soft Delete
+
+Sometimes we are not allowed to permanently remove data from the database. User account we need to keep, can be kept in audit log or do soft delete
+
+
+
+
+
+
+@SqlDelete would be called when u delete an entity instead of actual delete statement
+
+
+@Where clause would be added to all queries
+
+
+
+
+Hibernate Envers
+
+Log all changes we did to the db
+
+Envers does that for us.
+
+
+
+Reveision number has to match with revision table
+Type: type of operation that was performed on entity 0,1,2 for edit, update, delete
+
+
+
+
+
+
+
+
+
+Hibernate Validator
+
+
+For se have to add these too
+
+
+
+
+Pre-persist or pre-update triggers all the validations
+
+
+
+When trying to persist without setting value for non-nullable column, validator will raise exception
+
+sDatabase configurations
+
+Logging framework
+
+
+
+
+
+
+
+
+Fetch associations in batches
+
+Join fetch clause
+Entitygraph
+
+
+@BatchSize not as efficient as join fetch or entitygraph but better than loading association one by one
+
+Books to be loaded in a group of 5 corresponding to author
+
+
+
+
+Select query in a group of 5 authors to get the list of books
+
+Lazy associations
+
+To retrieve needed data.
+Can be a problem if we need associated entities
+
+
+Where order has list of items
+
+N+1 problem
+
+Better solution to use Join Fetch clause
+
+Gets entity and associated entities in 1 query
+
+Only 1 query would be executed. Though better in performance, have to write additional code to get data and may be a problem if many 
+associations with diff entities. If no. of tables to fetch from is less, good to use this
+
+Similarly can use criteria api for same:
+
+
+Name entity graph
+
+
+
+Same as join fetch but is independent of query and can be used with entitymanager method
+
+
+
+DynamicEntityGraph
+
+Uses java api to get entity graph
+
+More flexible. Method to be reusable
+
+http://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#pc-refresh
+
+
+Merge: detached object to persistent state
+
+
+Transaction
+
+
+
+
+
+
+
+
+
+Read and write can be interleaved but should give outcome such that systems are executing in serial. 
+
+
+
+
+Shared lock: read lock
+Exclusive: write lock
+
+
+2 phase locking: 2pl
+
+
+
+
+
+
+Xmin: transaction id which wrote result in db. If transaction id higher, would be able to read it, else no. xmin used in insert, saves transaction id for user that inserted the row. Xmax used during delete.
+
+
+Bob is deleting a row so he writes xmax value.Until he commits, alice can still read the row.When bob commits, xmax valus is set and row may not get deleted instantaneously, but like a garbage collector. So reference is no longer in use So vaccum needs to run to clear those entries 
+
+
+
+
+Update does delete and then insert. So it is multiversioned that means at same time we can have 2 versions of same row.So sets xmax so rows with previous versions considered to be deleted and updates xmin to current transaction id.
+
+
+
+Dirty Read: Allowed to read a row that has not been committed yet
+
+
+If running analytics queries, it does not matter, else a problem.
+
+
+Non-repeatable read: Bob did select on a row and alice updated the value. So now bob sees different values.
+
+
+Phantom read: So when we are retrieving multiple rows, another row inserted and getting reflected in the result. Count changed.
+
+So if alice is querying 2 tables, post and post_details to see post writte by. But in between, bob updates the post_detaisl table. 
+
+
+Write skew: 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+If diff users updating diff columns, they should be able to do that
+So can construct schema based on writes
+
+So splitted my post table
+
+Each update goes to separate table.
+
+
+
+This works even if we don’t change our schema.
+
+
+
+
+
+
+ 

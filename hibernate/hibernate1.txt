@@ -1,0 +1,151 @@
+hibernate:
+1) mapping from Java classes to database tables 
+2) provides data query and retrieval facilities
+3) Hibernate may not be the best solution for data-centric applications that only use stored-procedures to implement the business logic in the database, it is most useful with object-oriented domain models and business logic in the Java-based middle-tier. 
+
+
+SessionFactory
+1) A thread-safe (and immutable) representation of the mapping of the application domain model to a database.
+2) Factory of session objects
+3) Very expensive to create
+4) Maintains services that can be used across sessions like second level cache, connection pools, transaction system integrations etc.
+
+Session:
+1) Single threaded, short lived object , modelling a unit of work 
+2) wraps a JDBC java.sql.Connection and acts as a factory for org.hibernate.Transaction instances.
+3)  It maintains a generally "repeatable read" persistence context (first level cache) of the application domain model.
+
+
+Transaction
+A single-threaded, short-lived object used by the application to demarcate individual physical transaction boundaries. EntityTransaction is the JPA equivalent and both act as an abstraction API to isolate the application from the underlying transaction system in use
+
+What’s the usage of Configuration Interface in hibernate?
+
+Configuration interface of hibernate framework is used to configure hibernate. It’s also used to bootstrap hibernate. Mapping documents of hibernate are located using this interface .
+
+
+Should all the mapping files of hibernate have .hbm.xml extension to work properly?
+
+No, having .hbm.xml extension is a convention and not a requirement for hibernate mapping file names. We can have any extension for these mapping files.
+
+. What’s HQL?
+ HQL is the query language used in Hibernate which is an extension of SQL. HQL is very efficient, simple and flexible query language to do various type of operations on relational database without writing complex database queries.
+
+How can we get hibernate statistics?
+ We can get hibernate statistics using getStatistics() method of SessionFactory class as shown below:
+ SessionFactory.getStatistics()
+
+How can we reduce database write action times in Hibernate?
+ Hibernate provides dirty checking feature which can be used to reduce database write times. Dirty checking feature of hibernate updates only those fields which require a change while keeps others unchanged.
+
+What’s the usage of callback interfaces in hibernate?
+ Callback interfaces of hibernate are useful in receiving event notifications from objects. For example, when an object is loaded or deleted, an event is generated and notification is sent using callback interfaces.
+
+What the four ORM levels are in hibernate?
+ Following are the four ORM levels in hibernate:
+ a. Pure Relational
+ b. Light Object Mapping
+ c. Medium Object Mapping
+ d. Full Object Mapping
+
+What is the default cache service of hibernate?
+ Hibernate supports multiple cache services like EHCache, OSCache, SWARMCache and TreeCache and default cache service of hibernate is EHCache.
+
+What’s the usage of Hibernate QBC API?
+ Hibernate Query By Criteria (QBC) API is used to create queries by manipulation of criteria objects at runtime.
+
+. How can we reattach any detached objects in Hibernate?
+
+Objects which have been detached and are no longer associated with any persistent entities can be reattached by calling session.merge() method of session class.
+
+What are different ways to disable hibernate second level cache?
+Hibernate second level cache can be disabled using any of the following ways:
+ a. By setting use_second_level_cache as false.
+ b. By using CACHEMODE.IGNORE
+ c. Using cache provider as org.hibernate.cache.NoCacheProvider
+
+Which one is the default transaction factory in hibernate?
+ With hibernate 3.2, default transaction factory is JDBCTransactionFactory.
+
+What’s the role of JMX in hibernate?
+ Java Applications and components are managed in hibernate by a standard API called JMX API. JMX provides tools for development of efficient and robust distributed, web based solutions.
+
+How can we bind hibernate session factory to JNDI ?
+ Hibernate session factory can be bound to JNDI by making configuration changes in hibernate.cfg file.
+
+ What different fetching strategies are of hibernate?
+ Following fetching strategies are available in hibernate:
+ 1. Join Fetching
+ 2. Batch Fetching
+ 3. Select Fetching
+ 4. Sub-select Fetching
+
+ What are derived properties in hibernate?
+ Derived properties are those properties which are not mapped to any columns of a database table. Such properties are calculated at runtime by evaluation of any expressions.
+
+ What’s the difference between load() and get() method in hibernate?
+ Load() methods results in an exception if the required records isn’t found in the database while get() method returns null when records against the id isn’t found in the database.
+ So, ideally we should use Load() method only when we are sure about existence of records against an id.
+
+What’s the use of version property in hibernate?
+ Version property is used in hibernate to know whether an object is in transient state or in detached state.
+
+What is attribute oriented programming?
+ In Attribute oriented programming, a developer can add Meta data (attributes) in the java source code to add more significance in the code. For Java (hibernate), attribute oriented programming is enabled by an engine called XDoclet.
+
+ What’s the use of session.lock() in hibernate?
+ session.lock() method of session class is used to reattach an object which has been detached earlier. This method of reattaching doesn’t check for any data synchronization in database while reattaching the object and hence may lead to lack of synchronization in data.
+
+Does hibernate support polymorphism?
+ Yes, hibernate fully supports polymorphism. Polymorphism queries and polymorphism associations are supported in all mapping strategies of hibernate.
+
+ What the three inheritance models are of hibernate?
+ Hibernate has following three inheritance models:
+ a. Tables Per Concrete Class
+ b. Table per class hierarchy
+ c. Table per sub-class
+
+How can we map the classes as immutable?
+ If we don’t want an application to update or delete objects of a class in hibernate, we can make the class as immutable by setting mutable=false
+
+What is Light Object Mapping?
+ Light Object Mapping is one of the levels of ORM quality in which all entities are represented as classes and they are mapped manually.
+
+What’s difference between managed associations and hibernate associations?
+ Managed associations relate to container management persistence and are bi-directional while hibernate associations are unidirectional.
+
+
+What is a Session Factory? Is it a thread-safe object?
+
+SessionFactory is Hibernates concept of a single datastore and is threadsafe so that many threads can access it concurrently and request for sessions and immutable cache of compiled mappings for a single database. A SessionFactory is usually only built once at startup. SessionFactory should be wrapped in some kind of singleton so that it can be easily accessed in an application code. 
+
+SessionFactory sessionFactory = new Configuration().configure().buildSessionfactory();
+
+How does Hibernate distinguish between transient(i.e. newly instantiated ) and detached object?
+
+” Hibernate uses the versionproperty, if there is one.
+
+” If not uses the identifier value. No identifier value means a new object. This does work only for Hibernate managed surrogate keys. Does not work for natural keys and assigned (i.e. not managed by Hibernate) surrogate keys.” Write your own strategy with Interceptor.isUnsaved().
+
+   What are the pros and cons of detached objects?
+
+Pros:
+
+” When long transactions are required due to user think-time, it is the best practice to break the long transaction up into two or more transactions. You can use detached objects from the first transaction to carry data all the way up to the presentation layer. These detached objects get modified outside a transaction and later on re-attached to a new transaction via another session.
+
+Cons
+
+” In general, working with detached objects is quite cumbersome, and better to not clutter up the session with them if possible. It is better to discard them and re-fetch them on subsequent requests. This approach is not only more portable but also more efficient because – the objects hang around in Hibernate’s cache anyway.
+
+” Also from pure rich domain driven design perspective it is recommended to use DTOs (DataTransferObjects) and DOs (DomainObjects) to maintain the separation between Service and UI tiers.
+
+
+What are the general considerations or best practices for defining your Hibernate persistent classes?
+?You must have a default no-argument constructor for your persistent classes and there should be getXXX() (i.e accessor/getter) and setXXX( i.e. mutator/setter) methods for all your persistable instance variables.
+?You should implement the equals() and hashCode() methods based on your business key and it is important not to use the id field in your equals() and hashCode() definition if the id field is a surrogate key (i.e. Hibernate managed identifier). This is because the Hibernate only generates and sets the field when saving the object.
+? It is recommended to implement the Serializable interface. This is potentially useful if you want to migrate around a multi-processor cluster.
+
+ 
+?  The persistent class should not be final because if it is final then lazy loading cannot be used by creating proxy objects.
+?  Use XDoclet tags for generating your *.hbm.xml files or Annotations (JDK 1.5 onwards), which are less verbose than *.hbm.xml files.
+

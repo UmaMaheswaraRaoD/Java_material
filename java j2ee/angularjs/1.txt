@@ -1,0 +1,11 @@
+javascript framework, build web application
+open source
+madewithangular.com: shows sites built with angularjs
+1) dependency injection
+2) 2 way data binding: keeps model and view sync at all time
+3) easy to test: unit + integration
+4) MVC apps, directives, filters, modules, routes..
+
+---------------------------
+Steps to build angularjs app:
+1) From angularjs.org download angular.js script file.

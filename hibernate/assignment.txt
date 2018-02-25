@@ -1,0 +1,20 @@
+
+B4 batch:
+
+Since hibernate is done, we would like to see a working implementation for same.
+
+Please create a student entity class with fields like id, name, emailId, Address and marks.
+Address entity with fields like houseNo, city, street, state, pincode.
+
+One to Many relationship between student and Address
+
+Implement dao methods which can:
+1)  save a new student, 
+2) get all student details //should use secong level caching 
+3) get student details for particluar id
+4) get students whose marks are greater than 40 //Use query cache for this
+5) update student , set marks = +5 , where marks are between 35 and 40. For this use locking technique.
+6) Use second level cache by deafult for this project
+7) Use bidirectional mapping to map students and address.
+
+If you are facing issues implementing any functionality, let Jayant know. Better if you are able to do it by Monday

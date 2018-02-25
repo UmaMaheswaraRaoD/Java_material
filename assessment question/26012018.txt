@@ -1,0 +1,12 @@
+Q1) What are the benefits of spring IOC?
+
+2) What is the difference in setter injection and construtor injection. Explain with the practical example
+
+3) If i have a repository bean with all crud operations implemented. How can I make this repository a singleton? Demonstrate using example
+
+4) Please create a connection pool class yourself
+
+5) What do we mean by Fails fast iterators?  
+
+6) I want to display the id, name,  marks percentage of students and division  obtained in the data when it is retrieved from db. Percentage and division is calculated based on marks , so if marks <50 : 3rd division, >50 and < 60 , second division and >60: 1st division . And % is calucated based on marks obtained divided by total i.e 100. How would you go about creating this student table. Here percentage and division is getting displayed. You need to think whether you need tehse 2 columns in db , since the values for these can be calculated while fetching the data. So table can have name, marks, id column only. Pros and cons of this? But it may have to do some extra calculation while fetching the query. Which may be time consuming. What do you think you can do to improve the performance?
+

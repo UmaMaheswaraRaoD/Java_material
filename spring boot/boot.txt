@@ -1,0 +1,156 @@
+spring: Dependency injection, Application framework. Can build enterprise java applications. 
+Programming and configuration model like @Service to manage lifecycle of a service class. Focus only on business logic. Infrastructure support to connect to db.huge framework. Support for various modules.
+
+Problems with spring: Multiple setup steps : mongodb, jdo, sql, configuration steps,multiple build, deploy steps.
+
+Boot: standalone application. Executable jar. Runs on embedded server. Production ready. 
+
+@SpringBootApplication//: starting point
+class App{
+	public static void main(String[] args){
+		SpringApplication.run(App.class, args);//sets up default configuration
+	}
+}
+
+ run: sets up default configuration, starts spring application context, performs classpath scan and starts tomcat server
+
+
+zipkin: log files
+
+
+sleuth: tracing the logs: app-name | traceid | spanid | true
+
+zipkin : import => graph
+
+@RestController  //from spring mvc
+class HelloController{
+@RequestMapping("/hello")
+public string sayHi(){
+return "Hi";
+}
+}
+
+
+In application.properties set the property for context path as:
+server.contextPath=/app
+
+Now url of application deployed would be http://localhost:8080/app/hello
+
+
+spring data repositories:
+pom: 
+jpa: @MappedSuperClass
+pom: spring-data-jpa, hibernate-entitymanager
+
+sample data: data.sql
+
+@Configuration
+@EnableJpaRepositories
+class AppConfig{
+
+@Bean 
+public DataSource ds{
+EmbeddedDataSourceBuilder bldr= new EmbeddedDataSourceBuilder();
+return bldr.setType(EmbeddedDatabaseType.HSQL).build();
+}
+
+enitymanagerFactory
+transactionManager //JPATransactionManager
+AnnotationConfigJavaApplication
+
+@Transactional
+}
+
+Persistence layer: using spring data repositories: find customer by id/ email..
+
+interface CustomerRepository extends Repository <Customer, long>{
+
+Customer findOne(Long id);
+Customer save (Customer customer);
+Customer findByEmailId(EmailId email);
+
+}
+
+Repository: marker interface, searched when @EnableJpaRepository done.  Proxy object created. //simplejparepository
+//findByPropertyName(PropertyName property)
+
+//queries derived form method names.
+//Delete and findAll:
+//CrudRepository has all crud methods, broad api exposed
+interface CustomerRepsoitory extends CrudRepository{
+
+repository.delete(1l);
+repository.save(Student) //does both save and update
+}
+
+//Pagination: customers can be accessed page by page
+
+PagingAndSortingRepository: sort entire data set
+void accessCustomerPageByPage(){
+//repository.
+
+
+CommandLineRunner: bean implements it, should run on startup.
+
+@RequestParam, @PathVariable
+
+JPARepository: delete in batch, deleteAllinBatch
+
+ReadOnlyRepository: 
+
+@DirtyWrites : test cases 
+
+@NoRepositoryBean: interface MyReadOnlyRep extends Repository{}: Don't create repository bean for this
+
+findByNameContaining(String name, Pageable p);//containing is keyword
+
+Manually defiend queries:
+
+@Query("select p from Product where attributes[?1]=?2")
+List<Product> findByAttributeAndValue(String attribute, String value)
+
+for named queries: @Query(name="foobar")
+
+Can externalize queries to property files"
+In META-INF: jpa-named-queries.properties
+
+Person.foo=select * from Person join address
+
+Flexible predicate execution: search by firstname,email , lastname combination
+
+hibernate caching: query
+
+ @EnableAutoConfiguration annotation, which will automatically load all the beans the application requires depending on what Spring Boot finds in the classpath. A lot of Spring users already know @EnableTransactionManagement, which will enable declarative transaction management, @EnableWebMvc, which enables Spring MVC, or @EnableScheduling, which will initialize a scheduler.
+
+
+This classes, like a lot of others in Spring Boot relies heavily on Spring annotations:
+• @ConditionOnClass activates a configuration only if one or several classes are present on the classpath
+• @EnableConfigurationProperties automatically maps a POJO to a set of properties in the Spring Boot configuration file (by default application.properties)
+• @ConditionalOnMissingBean enables a bean definition only if the bean wasn’t previously defined
+You can also refine the order in which those configuration classes load with @AutoConfigureBefore et @AutoConfigureAfter.
+
+@ConfigurationProperties(prefix = "spring.data.mongodb")
+public class MongoProperties {
+
+    private String host;
+    private int port = DBPort.PORT;
+    private String uri = "mongodb://localhost/test";
+    private String database;
+
+    // ... getters/ setters omitted
+}
+
+
+The @ConfigurationProperties will associate every properties with a particular prefix to the POJO. For instance, the property spring.data.mongodb.port will be mapped to the port attribute of this class.
+
+
+the @Conditional annotations, which will enable some configuration only if a specific condition is met.
+@ConditionalOnBean
+•@ConditionalOnClass
+•@ConditionalOnExpression
+•@ConditionalOnMissingBean
+•@ConditionalOnMissingClass
+•@ConditionalOnNotWebApplication
+•@ConditionalOnResource
+•@ConditionalOnWebApplication
+
